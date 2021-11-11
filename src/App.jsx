@@ -4,8 +4,7 @@ import { homoglyphs } from "./letters";
 
 /**
  * Built utilizing the homoglyph library compiled here
- * https://gist.github.com/StevenACoffman/a5f6f682d94e38ed804182dc2693ed4b
- *
+ * https://github.com/codebox/homoglyph/blob/master/raw_data/chars.txt
  */
 
 const Toast = Swal.mixin({
@@ -31,10 +30,9 @@ const App = () => {
         const glyphed = raw
             .split("")
             .map(char => {
-                const letter = char.toLowerCase();
-                const possible_substitutes = homoglyphs[letter];
-                if (possible_substitutes) {
-                    const random_sub = possible_substitutes[Math.floor(Math.random() * possible_substitutes.length)];
+                const substitutes = homoglyphs[char];
+                if (substitutes) {
+                    const random_sub = substitutes[Math.floor(Math.random() * substitutes.length)];
                     return random_sub;
                 } else {
                     return char;
