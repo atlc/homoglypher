@@ -8,6 +8,8 @@ import { homoglyphs } from "./letters";
  *
  */
 
+const RANDOM_THRESHOLD = 50;
+
 const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -23,28 +25,40 @@ const Toast = Swal.mixin({
 const App = () => {
     const [rawText, setRawText] = useState("");
     const [glyphs, setGlyphs] = useState("");
+    const [sensitivity, setSensitivity] = useState(100);
 
-    const handleTextUpdate = e => {
-        const raw = e.target.value;
-        setRawText(raw);
-
+    const generateGlyphs = raw => {
         const glyphed = raw
             .split("")
             .map(char => {
                 const letter = char.toLowerCase();
                 const possible_substitutes = homoglyphs[letter];
-                if (possible_substitutes) {
+                const should_be_randomized = Math.random() * sensitivity >= RANDOM_THRESHOLD * 0.5;
+
+                if (possible_substitutes && should_be_randomized) {
                     const random_sub = possible_substitutes[Math.floor(Math.random() * possible_substitutes.length)];
                     return random_sub;
-                } else {
-                    return char;
                 }
+
+                return char;
             })
             .join("");
         setGlyphs(glyphed);
     };
 
+    const handleSlider = e => {
+        setSensitivity(e.target.value);
+        generateGlyphs(rawText);
+    };
+
+    const handleTextUpdate = e => {
+        const raw = e.target.value;
+        setRawText(raw);
+        generateGlyphs(raw);
+    };
+
     const copy = async () => {
+        if (!glyphs) return;
         try {
             if (navigator.clipboard) {
                 await navigator.clipboard.writeText(glyphs);
@@ -62,10 +76,24 @@ const App = () => {
 
     return (
         <div className="container">
-            <div className="mt-5 justify-content-center">
-                <form className="p-5 bg-light rounded-3 shadow-lg">
-                    <div className="row">
-                        <div onClick={copy} className="col-12 col-md-6">
+            <div className="mt-5 justify-content-center shadow-lg">
+                <form className="px-5 py-3 bg-light rounded-3 shadow-lg">
+                    <div className="row justify-content-center">
+                        <div className="col-11 col-md-4 bg-white shadow rounded-3 my-2 py-1 px-4">
+                            <p className="text-dark">Sensitivity: {sensitivity}/100</p>
+                            <input
+                                step={5}
+                                max={100}
+                                min={25}
+                                value={sensitivity}
+                                onChange={handleSlider}
+                                type="range"
+                                className="form-range"
+                            />
+                        </div>
+                    </div>
+                    <div className="row justify-content-center">
+                        <div onClick={copy} className="col-12 col-md-6 my-2">
                             <label htmlFor="" className="text-dark">
                                 Output (click to copy)
                             </label>
@@ -73,24 +101,20 @@ const App = () => {
                                 value={glyphs}
                                 style={{ resize: "none" }}
                                 cols="30"
-                                rows="10"
+                                rows="6"
                                 readOnly
                                 className="form-control"></textarea>
                         </div>
-                        <div className="col-12 col-md-6">
-                            <div className="row">
-                                <label className="text-dark">Input your text here:</label>
-                            </div>
-                            <div className="row">
-                                <textarea
-                                    value={rawText}
-                                    onChange={handleTextUpdate}
-                                    style={{ resize: "none" }}
-                                    placeholder="Input your text to convert it to a mix of unicode characters to avoid simple word recognition."
-                                    cols="30"
-                                    rows="10"
-                                    className="form-control"></textarea>
-                            </div>
+                        <div className="col-12 col-md-6 my-2">
+                            <label className="text-dark">Input your text here:</label>
+                            <textarea
+                                value={rawText}
+                                onChange={handleTextUpdate}
+                                style={{ resize: "none" }}
+                                placeholder="Input your text to convert it to a mix of unicode characters to avoid simple word recognition."
+                                cols="30"
+                                rows="6"
+                                className="form-control shadow"></textarea>
                         </div>
                     </div>
                 </form>
