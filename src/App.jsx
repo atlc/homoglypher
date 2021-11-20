@@ -92,7 +92,18 @@ const App = () => {
                             />
                         </div>
                     </div>
-                    <div className="row justify-content-center">
+                    <div className="d-flex row flex-wrap-reverse justify-content-center">
+                        <div className="col-12 col-md-6 my-2">
+                            <label className="text-dark">Input your text here:</label>
+                            <textarea
+                                value={rawText}
+                                onChange={handleTextUpdate}
+                                style={{ resize: "none" }}
+                                placeholder="Input your text to convert it to a mix of unicode characters to avoid simple word recognition."
+                                cols="30"
+                                rows="6"
+                                className="form-control shadow"></textarea>
+                        </div>
                         <div onClick={copy} className="col-12 col-md-6 my-2">
                             <label htmlFor="" className="text-dark">
                                 Output (click to copy)
@@ -104,17 +115,6 @@ const App = () => {
                                 rows="6"
                                 readOnly
                                 className="form-control"></textarea>
-                        </div>
-                        <div className="col-12 col-md-6 my-2">
-                            <label className="text-dark">Input your text here:</label>
-                            <textarea
-                                value={rawText}
-                                onChange={handleTextUpdate}
-                                style={{ resize: "none" }}
-                                placeholder="Input your text to convert it to a mix of unicode characters to avoid simple word recognition."
-                                cols="30"
-                                rows="6"
-                                className="form-control shadow"></textarea>
                         </div>
                     </div>
                 </form>
